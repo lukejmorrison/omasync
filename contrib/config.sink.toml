@@ -1,0 +1,3 @@
+role = "sink"
+hotspot_ssid = "Dad-A15"
+destination = "~/Incoming/OmaSync"
