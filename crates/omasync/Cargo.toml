@@ -1,0 +1,15 @@
+[package]
+name = "omasync"
+version = "0.1.0"
+edition = "2021"
+description = "Offline mesh file carry for Omarchy — Wi-Fi, Bluetooth, Android hotspot."
+license = "MIT"
+publish = false
+
+[[bin]]
+name = "omasyncd"
+path = "src/main.rs"
+
+[lib]
+name = "omasync"
+path = "src/lib.rs"
