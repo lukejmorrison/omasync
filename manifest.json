@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "wizwam.omasync",
   "name": "OmaSync",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": "Wizwam",
   "license": "MIT",
   "homepage": "https://github.com/lukejmorrison/omasync",
@@ -11,13 +11,13 @@
   "keepLoaded": true,
   "entryPoints": {
     "barWidget": "qml/BarWidget.qml",
-    "panel": "qml/Panel.qml",
+    "panel": "qml/Menu.qml",
     "menu": "qml/Menu.qml",
     "service": "qml/Service.qml"
   },
   "barWidget": {
     "displayName": "OmaSync",
-    "description": "Offline folder carry — tap to open the mesh panel.",
+    "description": "Icon-only mesh status. Click for the OmaSync app dropdown.",
     "category": "System",
     "defaultSection": "right",
     "allowMultiple": false
