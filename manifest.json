@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "id": "wizwam.omasync",
+  "name": "OmaSync",
+  "version": "0.1.0",
+  "author": "Wizwam",
+  "license": "MIT",
+  "homepage": "https://github.com/lukejmorrison/omasync",
+  "description": "Carry folders between Omarchy hosts and companion phones over Wi-Fi, Bluetooth, and Android hotspots. No internet.",
+  "kinds": ["bar-widget", "panel", "menu", "service"],
+  "keepLoaded": true,
+  "entryPoints": {
+    "barWidget": "qml/BarWidget.qml",
+    "panel": "qml/Panel.qml",
+    "menu": "qml/Menu.qml",
+    "service": "qml/Service.qml"
+  },
+  "barWidget": {
+    "displayName": "OmaSync",
+    "description": "Offline folder carry — tap to open the mesh panel.",
+    "category": "System",
+    "defaultSection": "right",
+    "allowMultiple": false
+  }
+}
