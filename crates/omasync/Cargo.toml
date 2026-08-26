@@ -1,6 +1,6 @@
 [package]
 name = "omasync"
-version = "0.1.0"
+version = "0.1.3"
 edition = "2021"
 description = "Offline mesh file carry for Omarchy — Wi-Fi, Bluetooth, Android hotspot."
 license = "MIT"
@@ -13,3 +13,7 @@ path = "src/main.rs"
 [lib]
 name = "omasync"
 path = "src/lib.rs"
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
