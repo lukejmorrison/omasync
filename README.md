@@ -28,7 +28,21 @@ chmod +x install.sh
 4. Put an **OmaSync icon** on the **right side of the top bar** (hover for alt text, click for the app dropdown)
 5. Add **OmaSync** to the Super-key application menu
 
-Click the icon to open the dropdown with the live app at [omasync.grok.me](https://omasync.grok.me/). Middle-click (or press `o` in the panel) opens it in a window. Right-click refreshes daemon status.
+When someone nearby shares a folder, the bar icon **breathes green** (a stronger flash once a minute). Hover shows the folder names. Click the icon to pick which files to keep.
+
+```
+Files waiting
+You have a folder called Videos
+click a file to keep it, then Accept
+```
+
+Seed a demo offer on this machine (so you can see the pulse without going to Dad's):
+
+```bash
+omasyncd demo-offer
+```
+
+Middle-click (or press `o` in the panel) opens [omasync.grok.me](https://omasync.grok.me/) in a window. Right-click refreshes daemon status.
 
 ### Update the bar plugin only
 
@@ -45,7 +59,7 @@ If the chip is missing after install:
 omarchy plugin enable wizwam.omasync --section right
 ```
 
-To embed the app inside the dropdown (not just Open in window), install WebEngine once:
+To embed the app inside the dropdown (not just “Open in window”), install WebEngine once:
 
 ```bash
 sudo pacman -S qt6-webengine

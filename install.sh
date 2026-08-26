@@ -10,6 +10,7 @@ ROLE="host"
 DAEMON_ONLY=0
 PLUGIN_ONLY=0
 ROOT="$(cd "$(dirname "$0")" && pwd)"
+# When this file lives in a git clone that also has crates/, use the clone root.
 if [[ -d "$ROOT/crates/omasync" ]]; then
   REPO="$ROOT"
   PLUGIN_SRC="$ROOT"

@@ -1,9 +1,22 @@
 //! OmaSync protocol: carry folders between Omarchy hosts and companion phones
 //! with no internet. The daemon (`omasyncd`) indexes shares, picks a transport,
 //! and copies only the files the sink accepted.
+//!
+//! Transports
+//! ----------
+//! - `Wifi`      home LAN: host (or NAS mount) → carrier phone
+//! - `Bluetooth` proximity: carrier phone → relay phone (dad's Android)
+//! - `Hotspot`   phone AP: relay → sink laptop (dad's Omarchy, no WAN)
 
 use std::collections::HashSet;
 use std::path::{Path, PathBuf};
+
+pub mod inbox;
+
+pub use inbox::{
+    demo_inbox, inbox_path, load_inbox, load_or_seed, save_inbox, write_receipt, Inbox,
+    InboxFile, WaitingOffer,
+};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Role {
@@ -104,6 +117,18 @@ pub fn load_config(path: &Path) -> Config {
     cfg
 }
 
+pub fn expand_dest(raw: &str) -> PathBuf {
+    if let Some(rest) = raw.strip_prefix("~/") {
+        home_dir().join(rest)
+    } else if raw == "~" {
+        home_dir()
+    } else {
+        PathBuf::from(raw)
+    }
+}
+
+/// Decide how two roles should talk. Returns `None` if they cannot reach
+/// each other under the current radio / LAN conditions.
 pub fn pick_transport(
     from: Role,
     to: Role,
@@ -118,6 +143,7 @@ pub fn pick_transport(
     }
 }
 
+/// Files on `remote` that `local` does not already have (path + size).
 pub fn plan_copy(local: &[FileMeta], remote: &[FileMeta]) -> Vec<FileMeta> {
     let have: HashSet<(String, u64)> = local
         .iter()
@@ -130,6 +156,7 @@ pub fn plan_copy(local: &[FileMeta], remote: &[FileMeta]) -> Vec<FileMeta> {
         .collect()
 }
 
+/// Filter an offer down to the files the sink explicitly accepted.
 pub fn accept_offer(offer: &Offer, accepted_paths: &HashSet<String>) -> Vec<FileMeta> {
     offer
         .files
@@ -167,6 +194,30 @@ mod tests {
             pick_transport(Role::Relay, Role::Sink, false, true),
             Some(Transport::Hotspot)
         );
+    }
+
+    #[test]
+    fn plan_skips_files_already_on_sink() {
+        let local = vec![FileMeta {
+            path: "letter.pdf".into(),
+            size: 220,
+            mtime: 0,
+        }];
+        let remote = vec![
+            FileMeta {
+                path: "letter.pdf".into(),
+                size: 220,
+                mtime: 0,
+            },
+            FileMeta {
+                path: "recipes.pdf".into(),
+                size: 1100,
+                mtime: 0,
+            },
+        ];
+        let plan = plan_copy(&local, &remote);
+        assert_eq!(plan.len(), 1);
+        assert_eq!(plan[0].path, "recipes.pdf");
     }
 
     #[test]
