@@ -96,3 +96,17 @@ destination = "~/Incoming/OmaSync"
 |---|---|---|
 | Your Omarchy PC | `host` | Indexes NAS/local shares, mirrors to your phone |
 | Dad's Omarchy laptop | `sink` | Joins his Android hotspot, asks which files to land |
+
+
+## Phone apps (iOS + Android)
+
+One Flutter shell. The App Store binary is the passenger (Bluetooth, hotspot, vault, notifications). The UI deploys like Rails: publish the web app, bump `shell.json`, phones pull it on the next WAN. Offline they keep the last snapshot.
+
+```bash
+cd mobile
+flutter create --org com.wizwam --project-name omasync --platforms=ios,android .
+flutter pub get
+flutter run
+```
+
+See [mobile/README.md](mobile/README.md).
