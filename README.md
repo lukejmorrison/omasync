@@ -25,8 +25,19 @@ chmod +x install.sh
 1. Build `omasyncd` (Rust daemon) into `~/.local/bin`
 2. Enable a systemd user service
 3. Install the Omarchy 4 plugin `wizwam.omasync`
-4. Put **OmaSync** on the **right side of the top bar**
+4. Put an **OmaSync icon** on the **right side of the top bar** (hover for alt text, click for the app dropdown)
 5. Add **OmaSync** to the Super-key application menu
+
+Click the icon to open the dropdown with the live app at [omasync.grok.me](https://omasync.grok.me/). Middle-click (or press `o` in the panel) opens it in a window. Right-click refreshes daemon status.
+
+### Update the bar plugin only
+
+```bash
+cd ~/dev/omasync
+git pull
+./install.sh --plugin-only
+omarchy-restart-shell
+```
 
 If the chip is missing after install:
 
@@ -34,7 +45,14 @@ If the chip is missing after install:
 omarchy plugin enable wizwam.omasync --section right
 ```
 
-Drag it on the bar to move it. Super, type `OmaSync` to open the panel.
+To embed the app inside the dropdown (not just Open in window), install WebEngine once:
+
+```bash
+sudo pacman -S qt6-webengine
+omarchy-restart-shell
+```
+
+Drag the icon on the bar to move it. Super, type `OmaSync` to open the panel.
 
 ## Config
 
