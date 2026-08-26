@@ -24,16 +24,7 @@ fn main() {
 
 fn print_help() {
     eprintln!(
-        "omasyncd 0.1.0 — offline mesh file carry
-
-commands
-  omasyncd           run the daemon (socket $XDG_RUNTIME_DIR/omasync.sock)
-  omasyncd status    print JSON status
-  omasyncd role      print configured role (host|sink)
-
-config
-  ~/.config/omasync/config.toml
-"
+        "omasyncd 0.1.0 — offline mesh file carry\n\ncommands\n  omasyncd           run the daemon (socket $XDG_RUNTIME_DIR/omasync.sock)\n  omasyncd status    print JSON status\n  omasyncd role      print configured role (host|sink)\n\nconfig\n  ~/.config/omasync/config.toml\n",
     );
 }
 
@@ -96,12 +87,14 @@ fn status_json(cfg: &Config, online: bool, state: &str) -> String {
         .map(|d| d.as_secs())
         .unwrap_or(0);
     format!(
-        "{{\"ok\":{ok},\"version\":\"0.1.0\",\"plugin\":\"wizwam.omasync\",\"role\":\"{role}\",\"state\":\"{state}\",\"online\":{online},\"hotspot\":\"{hotspot}\",\"destination\":\"{dest}\",\"ts\":{ts}}}",
-        ok = online,
-        role = escape(&cfg.role),
-        hotspot = escape(&cfg.hotspot_ssid),
-        dest = escape(&cfg.destination),
-        ts = ts,
+        "{{\"ok\":{},\"version\":\"0.1.0\",\"plugin\":\"wizwam.omasync\",\"role\":\"{}\",\"state\":\"{}\",\"online\":{},\"hotspot\":\"{}\",\"destination\":\"{}\",\"ts\":{}}}",
+        if online { "true" } else { "false" },
+        escape(&cfg.role),
+        escape(state),
+        if online { "true" } else { "false" },
+        escape(&cfg.hotspot_ssid),
+        escape(&cfg.destination),
+        ts,
     )
 }
 
