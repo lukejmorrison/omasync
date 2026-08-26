@@ -1,6 +1,33 @@
-# OmaSync
+<p align="center">
+  <img src="docs/cover.jpg" alt="OmaSync — Offline file carry" />
+</p>
 
-Offline folder carry for [Omarchy](https://omarchy.org): NAS/PC → phone → Bluetooth → Dad's Android hotspot → his Omarchy laptop. No internet.
+<h1 align="center">OmaSync</h1>
+
+<p align="center">
+  <strong>Carry folders without the internet.</strong><br/>
+  NAS / Omarchy → phone → Bluetooth → Dad's Android hotspot → his laptop.
+</p>
+
+<p align="center">
+  <a href="https://omasync.grok.me">omasync.grok.me</a>
+  ·
+  <a href="https://omasync.wizwam.com">omasync.wizwam.com</a>
+  ·
+  <a href="https://x.com/lukejmorrison">@lukejmorrison</a>
+</p>
+
+<p align="center">
+  <img src="docs/banner.jpg" alt="OmaSync banner" />
+</p>
+
+When you walk into a house with no WAN, the share is already on your phone. Phones hand off over Bluetooth. Dad's Omarchy joins his own hotspot, the bar icon breathes green, and he picks which files to keep.
+
+```
+Files waiting
+You have a folder called Videos
+click a file to keep it, then Accept
+```
 
 ## Install
 
@@ -25,24 +52,16 @@ chmod +x install.sh
 1. Build `omasyncd` (Rust daemon) into `~/.local/bin`
 2. Enable a systemd user service
 3. Install the Omarchy 4 plugin `wizwam.omasync`
-4. Put an **OmaSync icon** on the **right side of the top bar** (hover for alt text, click for the app dropdown)
+4. Put an **OmaSync icon** on the **right side of the top bar** (hover for alt text, click for the picker)
 5. Add **OmaSync** to the Super-key application menu
 
-When someone nearby shares a folder, the bar icon **breathes green** (a stronger flash once a minute). Hover shows the folder names. Click the icon to pick which files to keep.
-
-```
-Files waiting
-You have a folder called Videos
-click a file to keep it, then Accept
-```
-
-Seed a demo offer on this machine (so you can see the pulse without going to Dad's):
+Seed a demo offer so the chip pulses without going to Dad's:
 
 ```bash
 omasyncd demo-offer
 ```
 
-Middle-click (or press `o` in the panel) opens [omasync.grok.me](https://omasync.grok.me/) in a window. Right-click refreshes daemon status.
+Middle-click (or press `o` in the panel) opens the live app. Right-click refreshes daemon status.
 
 ### Update the bar plugin only
 
@@ -57,13 +76,6 @@ If the chip is missing after install:
 
 ```bash
 omarchy plugin enable wizwam.omasync --section right
-```
-
-To embed the app inside the dropdown (not just “Open in window”), install WebEngine once:
-
-```bash
-sudo pacman -S qt6-webengine
-omarchy-restart-shell
 ```
 
 Drag the icon on the bar to move it. Super, type `OmaSync` to open the panel.
