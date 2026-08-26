@@ -1,10 +1,9 @@
 import QtQuick
 
-// Two nodes + hub. When `waiting` is set the hub breathes green;
-// once a minute it does a stronger 3-beat flash.
+// Two nodes + hub. Box size never changes. Waiting only retints + opacity.
 Item {
     id: root
-    property real iconSize: 12
+    property real iconSize: 14
     property color color: "#ebe8e0"
     property bool live: true
     property bool waiting: false
@@ -14,96 +13,82 @@ Item {
     height: iconSize
     implicitWidth: iconSize
     implicitHeight: iconSize
+    clip: false
 
+    readonly property real inset: iconSize * 0.14
+    readonly property real node: iconSize * 0.22
+    readonly property real hub: iconSize * 0.36
     readonly property color restColor: live ? color : Qt.darker(color, 1.45)
-    property real pulse: waiting ? 0.45 : 1
-    property bool minuteFlash: false
+    property real glow: 1
 
-    readonly property color hubColor: waiting
-        ? Qt.rgba(waitColor.r, waitColor.g, waitColor.b, 0.55 + 0.45 * pulse)
-        : restColor
-
-    SequentialAnimation on pulse {
-        running: root.waiting && !root.minuteFlash
+    SequentialAnimation on glow {
+        running: root.waiting
         loops: Animation.Infinite
-        NumberAnimation { from: 0.35; to: 1.0; duration: 2200; easing.type: Easing.InOutSine }
-        NumberAnimation { from: 1.0; to: 0.35; duration: 2200; easing.type: Easing.InOutSine }
-    }
-
-    SequentialAnimation {
-        id: minutePulse
-        running: false
-        loops: 3
-        NumberAnimation { target: root; property: "pulse"; from: 0.2; to: 1.0; duration: 280; easing.type: Easing.OutQuad }
-        NumberAnimation { target: root; property: "pulse"; from: 1.0; to: 0.2; duration: 280; easing.type: Easing.InQuad }
-        onStopped: root.minuteFlash = false
+        NumberAnimation { from: 0.5; to: 1.0; duration: 2600; easing.type: Easing.InOutSine }
+        NumberAnimation { from: 1.0; to: 0.5; duration: 2600; easing.type: Easing.InOutSine }
     }
 
     Timer {
         interval: 60000
         running: root.waiting
         repeat: true
-        onTriggered: {
-            root.minuteFlash = true
-            minutePulse.restart()
-        }
+        onTriggered: flash.restart()
     }
 
-    // Soft green halo so the chip reads as "alert" even at 12px.
+    SequentialAnimation {
+        id: flash
+        running: false
+        loops: 2
+        NumberAnimation { target: root; property: "glow"; to: 1.0; duration: 160 }
+        NumberAnimation { target: root; property: "glow"; to: 0.45; duration: 160 }
+    }
+
+    readonly property color ink: waiting
+        ? Qt.rgba(waitColor.r, waitColor.g, waitColor.b, 0.55 + 0.45 * glow)
+        : restColor
+
     Rectangle {
-        visible: root.waiting
+        width: root.node
+        height: root.node
+        radius: width / 2
+        color: root.ink
+        anchors.verticalCenter: parent.verticalCenter
+        x: root.inset
+    }
+
+    Rectangle {
+        width: root.node
+        height: root.node
+        radius: width / 2
+        color: root.ink
+        anchors.verticalCenter: parent.verticalCenter
+        x: root.width - root.inset - width
+    }
+
+    Rectangle {
+        width: root.hub
+        height: root.hub
+        radius: width / 2
+        color: root.waiting ? root.waitColor : root.ink
         anchors.centerIn: parent
-        width: root.iconSize * (1.15 + 0.25 * root.pulse)
-        height: width
-        radius: width / 2
-        color: "transparent"
-        border.width: 1.2
-        border.color: root.waitColor
-        opacity: 0.25 + 0.55 * root.pulse
+        opacity: root.waiting ? (0.72 + 0.28 * root.glow) : 1
     }
 
     Rectangle {
-        width: root.iconSize * 0.22
-        height: root.iconSize * 0.22
-        radius: width / 2
-        color: root.hubColor
+        width: Math.max(1.5, root.iconSize * 0.18)
+        height: Math.max(1.2, root.iconSize * 0.08)
+        color: root.ink
+        opacity: 0.9
         anchors.verticalCenter: parent.verticalCenter
-        x: 0
+        x: root.inset + root.node - 0.4
     }
 
     Rectangle {
-        width: root.iconSize * 0.22
-        height: root.iconSize * 0.22
-        radius: width / 2
-        color: root.hubColor
+        width: Math.max(1.5, root.iconSize * 0.18)
+        height: Math.max(1.2, root.iconSize * 0.08)
+        color: root.ink
+        opacity: 0.9
         anchors.verticalCenter: parent.verticalCenter
-        x: root.iconSize - width
-    }
-
-    Rectangle {
-        width: root.iconSize * 0.42
-        height: root.iconSize * 0.42
-        radius: width / 2
-        color: root.waiting ? root.waitColor : root.hubColor
-        anchors.centerIn: parent
-        opacity: root.waiting ? (0.65 + 0.35 * root.pulse) : (root.live ? 1 : 0.7)
-    }
-
-    Rectangle {
-        width: root.iconSize * 0.18
-        height: Math.max(1.5, root.iconSize * 0.08)
-        color: root.hubColor
-        opacity: 0.85
-        anchors.verticalCenter: parent.verticalCenter
-        x: root.iconSize * 0.18
-    }
-
-    Rectangle {
-        width: root.iconSize * 0.18
-        height: Math.max(1.5, root.iconSize * 0.08)
-        color: root.hubColor
-        opacity: 0.85
-        anchors.verticalCenter: parent.verticalCenter
-        x: root.iconSize * 0.64
+        x: root.width / 2 + root.hub / 2 - 0.4
     }
 }

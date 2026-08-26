@@ -38,19 +38,15 @@ Panel {
         return "OmaSync — daemon offline"
     }
 
+    readonly property int glyph: Style.space ? Style.space(14) : 14
     implicitWidth: button.implicitWidth
     implicitHeight: button.implicitHeight
 
     function parseStatus(text) {
         const t = (text || "").trim()
-        statusJson = t
-        if (!t) {
-            daemonState = "offline"
-            waitingCount = 0
-            waitingFiles = 0
-            waitingNames = []
+        if (!t)
             return
-        }
+        statusJson = t
         try {
             const j = JSON.parse(t)
             daemonRole = j.role || daemonRole
@@ -105,12 +101,12 @@ Panel {
     }
 
     Timer {
-        interval: 2500
+        interval: 5000
         running: true
         repeat: true
         onTriggered: {
-            statusProc.running = false
-            statusProc.running = true
+            if (!statusProc.running)
+                statusProc.running = true
         }
     }
 
@@ -135,17 +131,14 @@ Panel {
         id: button
         anchors.fill: parent
         bar: root.bar
-        active: root.waiting || root.daemonState === "copying"
+        active: false
         tooltipText: root.altText
         iconComponent: Component {
-            Item {
-                OmaSyncIcon {
-                    anchors.centerIn: parent
-                    iconSize: Style.space ? Style.space(12) : 12
-                    color: root.live ? root.foreground : root.dim
-                    live: root.live
-                    waiting: root.waiting
-                }
+            OmaSyncIcon {
+                iconSize: root.glyph
+                color: root.live ? root.foreground : root.dim
+                live: root.live
+                waiting: root.waiting
             }
         }
         onPressed: function (buttonCode) {
