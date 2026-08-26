@@ -12,6 +12,9 @@ fn main() {
     let mut args = std::env::args().skip(1);
     let cmd = args.next().unwrap_or_default();
     match cmd.as_str() {
+        "version" | "-V" | "--version" => {
+            println!("omasyncd {}", env!("CARGO_PKG_VERSION"));
+        }
         "status" | "-s" => cmd_status(),
         "role" => {
             let cfg = load_config(&config_path());
@@ -61,6 +64,7 @@ fn print_help() {
 
 commands
   omasyncd              run the daemon (socket $XDG_RUNTIME_DIR/omasync.sock)
+  omasyncd version      print this binary's version (does not talk to the socket)
   omasyncd status       JSON status, including waiting folders
   omasyncd demo-offer   seed a Videos + For Dad inbox (flashes the bar chip)
   omasyncd toggle ID PATH
