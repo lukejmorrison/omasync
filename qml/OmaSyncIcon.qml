@@ -1,11 +1,10 @@
 import QtQuick
-import qs.Commons
 
-// Two nodes + hub. Reads at bar size.
+// Two nodes + hub. Reads at bar size. No qs.Commons so a missing Style cannot take the chip down.
 Item {
     id: root
     property real iconSize: 12
-    property color color: Color.foreground
+    property color color: "#ebe8e0"
     property bool live: true
 
     width: iconSize

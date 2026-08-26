@@ -5,6 +5,7 @@ import Quickshell.Io
 import qs.Commons
 import qs.Ui
 
+// Icon-only chip. Hover = alt text. Click = dropdown with omasync.grok.me.
 Panel {
     id: root
     moduleName: "wizwam.omasync"
@@ -13,14 +14,21 @@ Panel {
 
     property string daemonState: "offline"
     property string daemonRole: "host"
-    property int activeCopies: 0
+    property string appUrl: "https://omasync.grok.me/"
 
-    readonly property color foreground: bar ? bar.barForeground : Color.foreground
+    readonly property color foreground: bar ? bar.foreground : Color.foreground
     readonly property color dim: Qt.darker(foreground, 1.45)
     readonly property bool live: daemonState === "idle" || daemonState === "copying"
+    readonly property string altText: {
+        if (daemonState === "copying")
+            return "OmaSync — copying"
+        if (live)
+            return "OmaSync — carry folders without the internet"
+        return "OmaSync — daemon offline"
+    }
 
-    implicitWidth: chip.implicitWidth
-    implicitHeight: chip.implicitHeight
+    implicitWidth: button.implicitWidth
+    implicitHeight: button.implicitHeight
 
     function parseStatus(text) {
         const t = (text || "").trim()
@@ -41,11 +49,30 @@ Panel {
     function refresh() {
         statusProc.running = false
         statusProc.running = true
+        if (bodyLoader.item && bodyLoader.item.refresh)
+            bodyLoader.item.refresh()
+    }
+
+    function openAppWindow() {
+        openProc.running = false
+        openProc.running = true
+    }
+
+    onOpenedChanged: {
+        if (opened) {
+            refresh()
+            if (button.hideOwnTooltip)
+                button.hideOwnTooltip()
+            Qt.callLater(function () {
+                if (keyCatcher)
+                    keyCatcher.forceActiveFocus()
+            })
+        }
     }
 
     Process {
         id: statusProc
-        command: ["omasyncd", "status"]
+        command: ["bash", "-lc", "omasyncd status"]
         running: true
         stdout: StdioCollector {
             onStreamFinished: root.parseStatus(this.text)
@@ -56,45 +83,94 @@ Panel {
         interval: 2500
         running: true
         repeat: true
-        onTriggered: root.refresh()
+        onTriggered: {
+            statusProc.running = false
+            statusProc.running = true
+        }
     }
 
-    Rectangle {
-        id: chip
-        implicitWidth: row.implicitWidth + 14
-        implicitHeight: 22
-        radius: 6
-        color: "transparent"
+    Process {
+        id: openProc
+        running: false
+        command: ["bash", "-lc", "omarchy-launch-webapp '" + root.appUrl + "' 2>/dev/null || omarchy-launch-browser '" + root.appUrl + "' 2>/dev/null || xdg-open '" + root.appUrl + "'"]
+    }
 
-        Row {
-            id: row
-            anchors.centerIn: parent
-            spacing: 6
+    IpcHandler {
+        target: root.ipcTarget
+        function open(): void { root.open() }
+        function close(): void { root.close() }
+        function show(): void { root.open() }
+        function hide(): void { root.close() }
+        function toggle(): void { root.toggle() }
+        function refresh(): string { root.refresh(); return "ok" }
+        function status(): string { return root.daemonRole + " " + root.daemonState }
+    }
 
-            Rectangle {
-                width: 6
-                height: 6
-                radius: 3
-                anchors.verticalCenter: parent.verticalCenter
-                color: root.live ? (bar ? bar.foreground : Color.foreground) : root.dim
-            }
-
-            Text {
-                text: root.daemonState === "copying" ? (root.activeCopies + " copying") : "OmaSync"
-                color: root.live ? root.foreground : root.dim
-                font.family: bar ? bar.fontFamily : Style.font.family
-                font.pixelSize: 12
+    BarIconButton {
+        id: button
+        anchors.fill: parent
+        bar: root.bar
+        active: root.daemonState === "copying"
+        tooltipText: root.altText
+        iconComponent: Component {
+            Item {
+                OmaSyncIcon {
+                    anchors.centerIn: parent
+                    iconSize: Style.space ? Style.space(12) : 12
+                    color: root.live ? root.foreground : root.dim
+                    live: root.live
+                }
             }
         }
+        onPressed: function (buttonCode) {
+            if (buttonCode === Qt.RightButton)
+                root.refresh()
+            else if (buttonCode === Qt.MiddleButton)
+                root.openAppWindow()
+            else
+                root.toggle()
+        }
+    }
 
-        MouseArea {
+    KeyboardPanel {
+        id: panel
+        anchorItem: button
+        owner: root
+        bar: root.bar
+        open: root.opened
+        focusTarget: keyCatcher
+        contentWidth: panel.fittedContentWidth(Style.space ? Style.space(720) : 720)
+        contentHeight: panel.fittedContentHeight(Style.space ? Style.space(560) : 560, Style.space ? Style.space(640) : 640)
+
+        PanelKeyCatcher {
+            id: keyCatcher
             anchors.fill: parent
-            acceptedButtons: Qt.LeftButton | Qt.RightButton
-            onClicked: function (mouse) {
-                if (mouse.button === Qt.RightButton)
+            onCloseRequested: root.close()
+            onTabRequested: function (direction) {
+                if (root.switchPanel)
+                    root.switchPanel(direction)
+                else if (root.bar && typeof root.bar.switchPanelFrom === "function")
+                    root.bar.switchPanelFrom(root, direction)
+            }
+            onTextKey: function (t) {
+                if (t === "o" || t === "O")
+                    root.openAppWindow()
+                else if (t === "r" || t === "R")
                     root.refresh()
-                else
-                    root.toggle()
+            }
+
+            Loader {
+                id: bodyLoader
+                anchors.fill: parent
+                source: "Panel.qml"
+                onLoaded: {
+                    if (item) {
+                        item.bar = root.bar
+                        item.appUrl = root.appUrl
+                        if (item.refresh)
+                            item.refresh()
+                    }
+                }
             }
         }
     }

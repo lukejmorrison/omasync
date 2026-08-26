@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "wizwam.omasync",
   "name": "OmaSync",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "author": "Wizwam",
   "license": "MIT",
   "homepage": "https://github.com/lukejmorrison/omasync",
@@ -17,7 +17,7 @@
   },
   "barWidget": {
     "displayName": "OmaSync",
-    "description": "Icon-only mesh status. Click for the OmaSync app dropdown.",
+    "description": "Icon-only mesh status. Hover for alt text, click for the OmaSync app dropdown.",
     "category": "System",
     "defaultSection": "right",
     "allowMultiple": false
