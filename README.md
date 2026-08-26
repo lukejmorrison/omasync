@@ -103,10 +103,11 @@ destination = "~/Incoming/OmaSync"
 One Flutter shell. The App Store binary is the passenger (Bluetooth, hotspot, vault, notifications). The UI deploys like Rails: publish the web app, bump `shell.json`, phones pull it on the next WAN. Offline they keep the last snapshot.
 
 ```bash
-cd mobile
-flutter create --org com.wizwam --project-name omasync --platforms=ios,android .
-flutter pub get
-flutter run
+cd ~/dev/omasync
+chmod +x mobile/bootstrap.sh
+./mobile/bootstrap.sh
+cd ~/dev/omasync-phone
+flutter run -d 57250DLAQ0020D
 ```
 
 See [mobile/README.md](mobile/README.md).
